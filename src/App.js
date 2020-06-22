@@ -10,6 +10,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import LinearGradient from 'react-native-linear-gradient';
+
+
 export default function App() {
   async function handleLikeRepository(id) {
     // Implement "Like Repository" functionality
@@ -17,39 +20,21 @@ export default function App() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
+      <StatusBar barStyle="light-content" translucent />
       <SafeAreaView style={styles.container}>
-        <View style={styles.repositoryContainer}>
-          <Text style={styles.repository}>Repository 1</Text>
+      <LinearGradient 
+          start={{x: 1, y: 1}} 
+          end={{x: 0, y: 0}} 
+          colors={['#1F2233', '#303550']} 
+          style={styles.linearGradient}>
+          <Text style={styles.buttonText}>
+            Simple Linear Gradient Backgrount
+          </Text>
+        </LinearGradient>
 
-          <View style={styles.techsContainer}>
-            <Text style={styles.tech}>
-              ReactJS
-            </Text>
-            <Text style={styles.tech}>
-              Node.js
-            </Text>
-          </View>
+        
 
-          <View style={styles.likesContainer}>
-            <Text
-              style={styles.likeText}
-              // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
-              testID={`repository-likes-1`}
-            >
-              3 curtidas
-            </Text>
-          </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleLikeRepository(1)}
-            // Remember to replace "1" below with repository ID: {`like-button-${repository.id}`}
-            testID={`like-button-1`}
-          >
-            <Text style={styles.buttonText}>Curtir</Text>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView>
     </>
   );
@@ -58,50 +43,43 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#7159c1",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
-  repositoryContainer: {
-    marginBottom: 15,
-    marginHorizontal: 15,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  repository: {
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  techsContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  tech: {
-    fontSize: 12,
-    fontWeight: "bold",
-    marginRight: 10,
-    backgroundColor: "#04d361",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    color: "#fff",
-  },
-  likesContainer: {
-    marginTop: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  likeText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginRight: 10,
-  },
-  button: {
-    marginTop: 10,
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginRight: 10,
-    color: "#fff",
-    backgroundColor: "#7159c1",
-    padding: 15,
+  linearGradient: {
+    flex: 1,
+    alignSelf: 'stretch',
   },
 });
+
+
+
+{/*
+            <Text
+              style={styles.likeText}
+              // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
+              testID={`repository-likes-1`}
+            >
+              3 curtidas
+            </Text>
+
+            +++++++++++++++++++++++++++++++++++++++++++++
+            +++++++++++++++++++++++++++++++++++++++++++++
+
+
+            <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleLikeRepository(1)}
+            // Remember to replace "1" below with repository ID: {`like-button-${repository.id}`}
+            testID={`like-button-1`}
+            
+            >
+              <Text style={styles.buttonText}>
+                Curtir
+              </Text>
+            </TouchableOpacity>
+
+
+
+*/}
