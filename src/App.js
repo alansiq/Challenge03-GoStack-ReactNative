@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Avatar from './assets/avatar.jpg';
+
+
+
 
 import {
   SafeAreaView,
@@ -8,50 +12,204 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
+  Image
 } from "react-native";
 
 import LinearGradient from 'react-native-linear-gradient';
+import api from "./services/api";
 
 
 export default function App() {
+
+
+  const [repositories, setRepositories] = useState([]);
+
+
+  useEffect(() => {
+    api.get('repositories').then(response => {
+      setRepositories(response.data);
+    })
+  }, [])
+
+
   async function handleLikeRepository(id) {
-    // Implement "Like Repository" functionality
-  }
+    
+    const response = await api.post(`repositories/${id}/like`);
+
+    if (response.status === 200) {
+      const repositoryIndex = repositories.findIndex(repo => repo.id === id);
+      
+      repositories[repositoryIndex].likes = response.data.likes
+
+      setRepositories([...repositories])
+
+    }
+
+    }
+
 
   return (
     <>
       <StatusBar barStyle="light-content" translucent />
-      <SafeAreaView style={styles.container}>
-      <LinearGradient 
-          start={{x: 1, y: 1}} 
-          end={{x: 0, y: 0}} 
-          colors={['#1F2233', '#303550']} 
-          style={styles.linearGradient}>
-          <Text style={styles.buttonText}>
-            Simple Linear Gradient Backgrount
-          </Text>
-        </LinearGradient>
+      <LinearGradient
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        colors={['#1F2233', '#303550']}
+        style={styles.linearGradient}>
+        <SafeAreaView style={styles.container}>
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            colors={['#1F2233', '#303550']}
+            style={styles.intro}>
+            <Image
+              style={styles.avatarImage}
+              source={Avatar}
+            />
+            <Text style={styles.title}>Alan Siqueira</Text>
+            <Text style={styles.subtitle}>https://github.com/alansiq</Text>
 
-        
+          </LinearGradient>
+          <FlatList
+            data={repositories}
+            keyExtractor={repository => repository.id}
+            renderItem={({ item: repository }) => {
+
+              
+
+              return (
+                <LinearGradient
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  colors={['#1F2233', '#303550']}
+                  style={styles.listCard}>
+
+                  <View style={styles.cardContent}>
+                    <Text style={styles.title}> {repository.title} </Text>
+                    <View style={styles.techWrapper}>
+                      {repository.techs.map(tech => (
+                        <LinearGradient
+                          key={tech}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          colors={['#1F2233', '#303550']}
+                          style={styles.techPills}
+                        >
+                          <Text style={styles.techs}> {tech} </Text>
+                        </LinearGradient>
+                      ))}
+
+                    </View>
+
+                    <TouchableOpacity testID={`like-button-${repository.id}`} onPress={() => handleLikeRepository(repository.id)}>
+
+                      <Text style={styles.likes} testID={`repository-likes-${repository.id}`}>
+                        { repository.likes > 1 ? `${repository.likes} curtidas` : `${repository.likes} curtida` }</Text>
+                    </TouchableOpacity>
 
 
-      </SafeAreaView>
+                  </View>
+                  <View style={styles.cardDelete} >
+                    <Text style={styles.delete}>X</Text>
+                  </View>
+
+                </LinearGradient>
+
+
+              )
+            }}
+          />
+
+
+        </SafeAreaView>
+      </LinearGradient>
     </>
   );
 }
 
+
+const whiteText = '#F7F1EF';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
+
   linearGradient: {
     flex: 1,
     alignSelf: 'stretch',
   },
+
+  intro: {
+    height: 240,
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
+  avatarImage: {
+    height: 115,
+    width: 115,
+    borderRadius: 100,
+    borderColor: '#ffffff',
+    borderWidth: 2,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: whiteText,
+  },
+
+  subtitle: {
+    fontSize: 12,
+    color: whiteText,
+  },
+
+  listCard: {
+    alignSelf: 'stretch',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 8,
+    borderRadius: 4,
+    flexDirection: 'row',
+  },
+
+  cardDelete: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+  },
+
+  techWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+  },
+
+  techPills: {
+    padding: 4,
+    marginRight: 8,
+    marginVertical: 4,
+    borderRadius: 16,
+  },
+
+  techs: {
+    color: '#ffffff',
+    marginHorizontal: 4,
+  },
+
+  likes: {
+    color: '#ffffff',
+  },
+
+  delete: {
+    color: '#fff',
+  },
+
+
+
 });
+
+
 
 
 
