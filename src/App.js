@@ -31,26 +31,50 @@ export default function App() {
     })
   }, [])
 
+  async function handleAddRepo() {
+    const response = await api.post('repositories', {
+      title: `Created at ${Date.now()}`,
+      url: 'alansiqueira.com',
+      techs: ['React', 'Gatsby']
+    })
+
+    const newRepo = response.data;
+    setRepositories([...repositories, newRepo])
+  }
 
   async function handleLikeRepository(id) {
-    
+
     const response = await api.post(`repositories/${id}/like`);
 
     if (response.status === 200) {
       const repositoryIndex = repositories.findIndex(repo => repo.id === id);
-      
+
       repositories[repositoryIndex].likes = response.data.likes
 
       setRepositories([...repositories])
 
     }
 
-    }
+  }
 
+  async function handleRemoveRepo(id) {
+    const repoIndex = repositories.findIndex(repo => repo.id === id);
+
+    if (repoIndex >= 0) {
+      
+      const updatedRepositories = repositories;
+      updatedRepositories.splice(repoIndex, 1);
+
+
+      await api.delete(`repositories/${id}`);
+      setRepositories([...updatedRepositories]);
+
+    }
+  }
 
   return (
     <>
-      <StatusBar barStyle="light-content" translucent />
+      <StatusBar barStyle="light-content" backgroundColor={'#1F2233'} />
       <LinearGradient
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -75,7 +99,7 @@ export default function App() {
             keyExtractor={repository => repository.id}
             renderItem={({ item: repository }) => {
 
-              
+
 
               return (
                 <LinearGradient
@@ -104,14 +128,14 @@ export default function App() {
                     <TouchableOpacity testID={`like-button-${repository.id}`} onPress={() => handleLikeRepository(repository.id)}>
 
                       <Text style={styles.likes} testID={`repository-likes-${repository.id}`}>
-                        { repository.likes > 1 ? `${repository.likes} curtidas` : `${repository.likes} curtida` }</Text>
+                        {repository.likes > 1 ? `${repository.likes} curtidas` : `${repository.likes} curtida`}</Text>
                     </TouchableOpacity>
 
 
                   </View>
-                  <View style={styles.cardDelete} >
+                  <TouchableOpacity style={styles.deleteWrapper} onPress={() => handleRemoveRepo(repository.id)} style={styles.cardDelete} >
                     <Text style={styles.delete}>X</Text>
-                  </View>
+                  </TouchableOpacity>
 
                 </LinearGradient>
 
@@ -119,6 +143,10 @@ export default function App() {
               )
             }}
           />
+
+          <TouchableOpacity onPress={handleAddRepo} style={styles.addWrapper}>
+            <Text style={styles.addText}>+</Text>
+          </TouchableOpacity>
 
 
         </SafeAreaView>
@@ -166,12 +194,19 @@ const styles = StyleSheet.create({
   },
 
   listCard: {
+    shadowOffset: {
+      width: 1,
+      height: 12
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 19.9,
     alignSelf: 'stretch',
     marginHorizontal: 16,
     marginTop: 16,
     padding: 8,
     borderRadius: 4,
     flexDirection: 'row',
+
   },
 
   cardDelete: {
@@ -201,9 +236,37 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 
+  deleteWrapper: {
+    height: 20,
+    width: 20,
+    backgroundColor: '#333',
+  },
+
   delete: {
+    height: 20,
+    width: 20,
     color: '#fff',
   },
+
+  addWrapper: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 72,
+    width: 72,
+    backgroundColor: '#EE233C',
+    borderRadius: 100,
+  },
+
+  addText: {
+    color: whiteText,
+    fontSize: 30,
+    fontWeight: 'bold',
+    
+  }
+
 
 
 
